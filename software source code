@@ -1,0 +1,517 @@
+from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationToolbar2Tk)
+import webbrowser
+import math
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.linalg import eigvalsh
+import tkinter as tk
+from tkinter import *
+from tkinter import messagebox
+
+master = tk.Tk()
+master.state('zoomed')
+master.title("MOHR MAKER V0.2")
+label= Label(master,text ="2 EKSENLİ MOHR DAİRESİ")
+label.place(x=50,y=285)
+label= Label(master,text ="TAU MAX MODELİ")
+label.place(x=575,y=280)
+label= Label(master,text ="SİGMA MAX MODELİ")
+label.place(x=350,y=280)
+label= Label(master,text ="3 EKSENLİ MOHR DAİRESİ")
+label.place(x=990,y=300)
+label= Label(master,text ="İLK DURUMDAKİ HALİ")
+label.place(x=350,y=450)
+
+btn = tk.Label(master, text='SİGMA MAX')
+btn.grid(row=0, column=1,padx=20, pady=10)
+btn = tk.Label(master, text='TAU MAX')
+btn.grid(row=0, column=2,padx=20, pady=10)
+btn = tk.Label(master, text='----')
+btn.grid(row=1, column=4,padx=20, pady=10)
+
+
+
+
+fig = plt.figure(figsize=(2.7, 2.7),facecolor="slategray")
+fig1 = plt.figure(figsize=(2.3, 2.3),facecolor="silver")
+fig2 = plt.figure(figsize=(2.3, 2.3),facecolor="whitesmoke")
+fig3 = plt.figure(figsize=(2.9, 2.9),facecolor="whitesmoke")
+fig4 = plt.figure(figsize=(1.8, 1.8),facecolor="slategray")
+plt.xlim(1, 6)
+plt.ylim(1, 6)
+plt.plot([2,5],[2,2], linestyle='solid', color='black')
+plt.plot([5, 2], [5, 5], linestyle='solid', color='orange')
+plt.plot([5, 5], [5, 2], linestyle='solid', color='purple')
+plt.plot([2, 2], [5, 2], linestyle='solid', color='blue')
+plt.quiver(2, 3.5, 5, 0, scale=7)
+plt.quiver(5, 3.5, -5, 0, scale=7)
+plt.quiver( 3.5,2,  0,5, scale=7)
+plt.quiver(3.5, 5, 0, -5, scale=7)
+plt.quiver(2, 5.2, 5, 0, scale=8)
+plt.quiver(5.2, 2, 0, 5, scale=8)
+
+
+
+
+
+def sonuç1():
+    sxx = float(Entry.get(a2))
+    txy = float(Entry.get(b2))
+    txz = float(Entry.get(c3))
+    syy = float(Entry.get(d2))
+    tyz = float(Entry.get(e2))
+    szz = float(Entry.get(f2))
+
+    s = np.array([
+        [sxx, txy, txz],
+        [txy, syy, tyz],
+        [txz, tyz, szz]])
+
+    s3, s2, s1 = eigvalsh(s)
+    rx = 1 / 2 * (s1 - s3)
+    c1 = 1 / 2 * (s1 + s3)
+    ry = 1 / 2 * (s2 - s3)
+    c2 = 1 / 2 * (s2 + s3)
+
+    rz = 1 / 2 * (s1 - s2)
+    c4 = 1 / 2 * (s1 + s2)
+    sxmax=c1+rx
+    sxmin=c1-rx
+    txmax=rx
+    symax=c2+ry
+    symin=c2-ry
+    tymax=ry
+    szmax=c4+rz
+    szmin=c4-rz
+    tzmax=rz
+    messagebox.showinfo("sonuçlar", ' SXMax=(%s)\nSXmin=(%s)\nTXmax=(%s)\nSYMax=(%s)\nSYmin=(%s)\nTYmax=(%s)\nSZMax=(%s)\nSZmin=(%s)\nTZmax=(%s)\n' % (sxmax, sxmin, txmax,symax, symin, tymax,szmax, szmin, tzmax ))
+
+def sonuç():
+    sx1 = float(Entry.get(a1))
+    sy1 = float(Entry.get(b1))
+    txy1 = float(Entry.get(c1))
+
+    smax1 = ((sx1 + sy1) / 2) + np.sqrt((((sx1 - sy1) / 2) ** 2) + (txy1 ** 2))
+
+    smin1 = ((sx1 + sy1) / 2) - np.sqrt(((sx1 - sy1) / 2) ** 2 + txy1 ** 2)
+
+    tmax1 = np.sqrt(((sx1 - (sy1)) / 2) ** 2 + (txy1 ** 2))
+
+    theta1 = np.linspace(0, 2 * np.pi, 360)
+
+    r1 = ((sx1 + sy1) / 2)
+
+    R1 = np.sqrt((0.5 * (sx1 - sy1)) ** 2 + txy1 ** 2)
+
+    Savg1 = (sx1 + sy1) / 2
+
+    x1 = Savg1 + R1 * np.cos(theta1)
+
+    y1 = R1 * np.sin(theta1)
+    if (sx1 == sy1):
+            b = 0
+
+    else:
+
+        açı = (2 * (txy1)) / (sx1 - sy1)
+
+        açı1 = math.degrees(math.atan(açı))
+        açı2 = açı1 / 2
+        b = açı2 - 45
+    messagebox.showinfo("sonuçlar", ' SMax=(%s)\nSmin=(%s)\nTmax=(%s)\nTmaxTHETA=(%s)\nSmaxTHETA=(%s)' % (smax1,smin1,tmax1,b,açı2))
+
+
+def link():
+    webbrowser.open_new_tab("http://cmf-mm.web.nku.edu.tr/")
+
+
+def yardım():
+    webbrowser.open_new_tab("https://www.linkedin.com/in/atakan-t%C3%BCrkmen-621291175/")
+
+def yardım1():
+    webbrowser.open_new_tab("https://tr.linkedin.com/in/utkan-%C3%B6zer-b449b9151")
+
+
+def kenan():
+    webbrowser.open_new_tab("http://kcinar.cv.nku.edu.tr/")
+
+def mohr1():
+    fig3 = plt.figure(figsize=(2.9, 2.9), edgecolor="whitesmoke")
+    sxx = float(Entry.get(a2))
+    txy = float(Entry.get(b2))
+    txz = float(Entry.get(c3))
+    syy = float(Entry.get(d2))
+    tyz = float(Entry.get(e2))
+    szz = float(Entry.get(f2))
+
+    s = np.array([
+        [sxx, txy, txz],
+        [txy, syy, tyz],
+        [txz, tyz, szz]])
+
+    s3, s2, s1 = eigvalsh(s)
+    rx = 1 / 2 * (s1 - s3)
+    c1 = 1 / 2 * (s1 + s3)
+    ry = 1 / 2 * (s2 - s3)
+    c2 = 1 / 2 * (s2 + s3)
+
+    rz = 1 / 2 * (s1 - s2)
+    c4 = 1 / 2 * (s1 + s2)
+
+    cember1 = plt.Circle((c1, 0), rx, facecolor='w', lw=2.5,
+                         edgecolor='blue')
+    cember2 = plt.Circle((c2, 0), ry, facecolor='w', lw=2.5,
+                         edgecolor='red')
+    cember3 = plt.Circle((c4, 0), rz, facecolor='w', lw=2.5,
+                         edgecolor='red')
+    # plt.plot(x, y)
+
+    plt.plot([c1, c1], [-rx - 1, rx + 1], linestyle='--', color='orange')
+
+    plt.plot([0, 0], [-rx - 1, rx + 1], linestyle='--', color='black')
+
+    plt.plot([c2, c2], [-rx - 1, rx + 1], linestyle='--', color='orange')
+
+    plt.plot([c4, c4], [-rx - 1, rx + 1], linestyle='--', color='orange')
+
+    plt.plot([c1 - rx, c1 + rx], [0, 0], linestyle='--', color='black')
+
+    plt.axis('image')
+    ax = plt.gca()
+    ax.add_artist(cember1)
+    ax.add_artist(cember2)
+    ax.add_artist(cember3)
+    ax.set_xlim(s3 - .1 * rx, s1 + .2 * rx)
+    ax.set_ylim(-1.1 * rx, 1.1 * rx)
+    canvas = FigureCanvasTkAgg(fig3, master=master)
+    canvas.draw()
+    canvas.get_tk_widget().grid(row=0, column=5)
+
+
+
+def mohr():
+    fig = plt.figure(figsize=(2.7, 2.7))
+    sx1 = float(Entry.get(a1))
+    sy1 = float(Entry.get(b1))
+    txy1 = float(Entry.get(c1))
+
+
+
+    smax1 = ((sx1 + sy1) / 2) + np.sqrt((((sx1 - sy1) / 2) ** 2) + (txy1 ** 2))
+
+    smin1 = ((sx1 + sy1) / 2) - np.sqrt(((sx1 - sy1) / 2) ** 2 + txy1 ** 2)
+
+    tmax1 = np.sqrt(((sx1 - (sy1)) / 2) ** 2 + (txy1 ** 2))
+
+    theta1 = np.linspace(0, 2 * np.pi, 360)
+
+    r1 = ((sx1 + sy1) / 2)
+
+    R1 = np.sqrt((0.5 * (sx1 - sy1)) ** 2 + txy1 ** 2)
+
+    Savg1 = (sx1 + sy1) / 2
+
+    x1 = Savg1 + R1 * np.cos(theta1)
+
+    y1 = R1 * np.sin(theta1)
+
+    plt.plot(x1, y1)
+
+    plt.plot([Savg1 - R1 - 10, Savg1 + R1 + 10], [0, 0], linestyle='--', color='blue')
+
+    plt.plot([Savg1, Savg1], [-R1 - 10, R1 + 10], linestyle='--', color='red')
+
+    plt.plot([0, 0], [-R1 - 10, R1 + 10], linestyle='--', color='black')
+    #plt.title("[Created by Atakan Türkmen and Utkan Özer] \n2 EKSENLİ MOHR DAİRESİ")
+
+    plt.text( smax1,5 ,' Smax=(%s)' % round(smax1), color="red",size=6,)
+    plt.text(smin1,5 ,' Smin=(%s)' % round(smin1), color="red",size=6,)
+    plt.text(r1, tmax1+3, ' Tmax=(%s)' % round(tmax1), color="red",size=6,)
+
+    plt.plot([sx1, sy1], [-txy1, txy1], [sx1, sx1], [-txy1, 0], [sy1, sy1], [txy1, 0], linestyle='solid', color='black')
+
+    plt.xlabel("Sigma(MPa) ")
+
+    plt.ylabel(" Tau(MPa) ")
+    canvas = FigureCanvasTkAgg(fig, master=master)
+    canvas.draw()
+    canvas.get_tk_widget().grid(row=0, column=0)
+
+
+def tau():
+    fig2 = plt.figure(figsize=(2.3, 2.3))
+
+
+    sx1 = float(Entry.get(a1))
+    sy1 = float(Entry.get(b1))
+    txy1 = float(Entry.get(c1))
+
+    smax1 = ((sx1 + sy1) / 2) + np.sqrt((((sx1 - sy1) / 2) ** 2) + (txy1 ** 2))
+
+    smin1 = ((sx1 + sy1) / 2) - np.sqrt(((sx1 - sy1) / 2) ** 2 + txy1 ** 2)
+
+    tmax1 = np.sqrt(((sx1 - (sy1)) / 2) ** 2 + (txy1 ** 2))
+
+    theta1 = np.linspace(0, 2 * np.pi, 360)
+
+    r1 = ((sx1 + sy1) / 2)
+
+    R1 = np.sqrt((0.5 * (sx1 - sy1)) ** 2 + txy1 ** 2)
+
+    Savg1 = (sx1 + sy1) / 2
+
+    if (sx1 == sy1):
+            b = 0
+            u = math.cos(math.radians(b)) * 5
+            u1 = math.sin(math.radians(b)) * 5
+            u2 = math.cos(math.radians(b)) * 2
+            u3 = math.sin(math.radians(b)) * 2
+
+    else:
+
+        açı = (2 * (txy1)) / (sx1 - sy1)
+
+        açı1 = math.degrees(math.atan(açı))
+        açı2 = açı1 / 2
+        b = açı2 - 45
+        u = math.cos(math.radians(b)) * 5
+        u1 = math.sin(math.radians(b)) * 5
+        u2 = math.cos(math.radians(b)) * 2
+        u3 = math.sin(math.radians(b)) * 2
+        print(b)
+    plt.plot([0, u], [0, u1], linestyle='solid', color='blue')
+    plt.plot([0, u], [u1, u1], linestyle='--', color='black')
+    plt.plot([0, 0], [0, u1], linestyle='--', color='black')
+    plt.plot([u - u1, 0 - u1], [u + u1, u], linestyle='solid', color='blue')
+    plt.plot([0, -u1], [0, u], linestyle='solid', color='blue')
+    plt.plot([u, u - u1], [u1, u1 + u], linestyle='solid', color='blue')
+    plt.text(0, u1+0.1, ' THETA=(%s)' % round(b), color="red",size=6,)
+    plt.text(((u - u1) / 2),(u+u1)/2 , ' TMax=(%s)' % round(tmax1), color="red",size=6,)
+    #plt.plot([((u - u1) / 2)- u2 , ((u - u1) / 2) + u2], [((u + u1) / 2) - u3, ((u + u1) / 2) + u3], linestyle='--',
+     #            color='black')
+    #plt.plot([((u - u1) / 2) - u3, ((u - u1) / 2) + u3], [((u + u1) / 2) + u2, ((u + u1) / 2) - u2], linestyle='--',
+    #             color='black')
+    plt.quiver(-0.2,0.2,-u1,u,scale=7)
+    plt.quiver(0.2+u-u1,0.2+u+u1,-u,0-u1 ,scale=7)
+
+
+    canvas = FigureCanvasTkAgg(fig2, master=master)
+    canvas.draw()
+    canvas.get_tk_widget().grid(row=0, column=2)
+def ilk():
+    fig4 = plt.figure(figsize=(2.3, 2.3))
+    plt.xlim(1, 6)
+    plt.ylim(1, 6)
+    plt.plot([2,5],[2,2], linestyle='solid', color='black')
+    plt.plot([5, 2], [5, 5], linestyle='solid', color='orange')
+    plt.plot([5, 5], [5, 2], linestyle='solid', color='purple')
+    plt.plot([2, 2], [5, 2], linestyle='solid', color='blue')
+    plt.quiver(2, 3.5, 5, 0, scale=7)
+    plt.quiver(5, 3.5, -5, 0, scale=7)
+    plt.quiver( 3.5,2,  0,5, scale=7)
+    plt.quiver(3.5, 5, 0, -5, scale=7)
+    plt.quiver(2, 5.2, 5, 0, scale=8)
+    plt.quiver(5.2, 2, 0, 5, scale=8)
+    sx1 = float(Entry.get(a1))
+    sy1 = float(Entry.get(b1))
+    txy1 = float(Entry.get(c1))
+    plt.text(3.5,5.6, ' Sy=(%s)' % round(sy1), color="blue", size=6,)
+    plt.text(5.3, 3.7, ' Sx=(%s)' % round(sx1), color="blue", size=6, )
+    plt.text(5.3, 5.6, ' Txy=(%s)' % round(txy1), color="blue", size=6, )
+
+
+
+    plt.figure()
+    canvas = FigureCanvasTkAgg(fig4, master=master)
+    canvas.draw()
+    canvas.get_tk_widget().place(x=350,y=480)
+def sigma():
+    fig1 = plt.figure(figsize=(2.3, 2.3))
+    sx1 = float(Entry.get(a1))
+    sy1 = float(Entry.get(b1))
+    txy1 = float(Entry.get(c1))
+
+    smax1 = ((sx1 + sy1) / 2) + np.sqrt((((sx1 - sy1) / 2) ** 2) + (txy1 ** 2))
+
+    smin1 = ((sx1 + sy1) / 2) - np.sqrt(((sx1 - sy1) / 2) ** 2 + txy1 ** 2)
+
+    tmax1 = np.sqrt(((sx1 - (sy1)) / 2) ** 2 + (txy1 ** 2))
+
+    theta1 = np.linspace(0, 2 * np.pi, 360)
+
+    r1 = ((sx1 + sy1) / 2)
+
+    R1 = np.sqrt((0.5 * (sx1 - sy1)) ** 2 + txy1 ** 2)
+
+    Savg1 = (sx1 + sy1) / 2
+
+    if (sx1 == sy1):
+        b = 45
+        u = math.cos(math.radians(b)) * 5
+        u1 = math.sin(math.radians(b)) * 5
+        s = math.cos(math.radians(b)) * 2.5
+        s1 = math.sin(math.radians(b)) * 2.5
+        u2 = math.cos(math.radians(b)) * 5.5
+        u3 = math.sin(math.radians(b)) * 5.5
+    else:
+
+        açı = (2 * (txy1)) / (sx1 - sy1)
+        açı1 = math.degrees(math.atan(açı))
+        açı2 = açı1 / 2
+        b = açı2
+        u = math.cos(math.radians(b)) * 5
+        u1 = math.sin(math.radians(b)) * 5
+        s = math.cos(math.radians(b)) * 2.5
+        s1 = math.sin(math.radians(b)) * 2.5
+        u2 = math.cos(math.radians(b)) * 5.5
+        u3 = math.sin(math.radians(b)) * 5.5
+
+    """print(açı)
+    print(açı1)
+    print(b)
+    print(u)
+    print(u1)
+    print(s)
+    print(s1)
+    print(smax1)
+    print(smin1)"""
+
+    plt.plot([0, u], [0, u1], linestyle='solid', color='blue')
+    #plt.plot([((u - u1) / 2) - u2, ((u - u1) / 2) + u2], [((u + u1) / 2) - u3, ((u + u1) / 2) + u3], linestyle='solid',
+                 #color='black')
+    #plt.plot([((u - u1) / 2) - u3, ((u - u1) / 2) + u3], [((u + u1) / 2) + u2, ((u + u1) / 2) - u2], linestyle='solid',
+      #           color='black')
+    plt.quiver(((u - u1) / 2) - u2,((u + u1) / 2) - u3,u2,u3,scale=6)
+    plt.quiver(((u - u1) / 2) + u2,((u + u1) / 2) + u3, -u2, -u3, scale=6)
+    plt.quiver(((u - u1) / 2) - u3,((u + u1) / 2) + u2,u3,-u2, scale=6)
+    plt.quiver(((u - u1) / 2) + u3,((u + u1) / 2) - u2, -u3, u2, scale=6)
+    plt.plot([0, u], [-0.1, -0.1], linestyle='--', color='black')
+    plt.plot([u - u1, 0 - u1], [u + u1, u], linestyle='solid', color='blue')
+    plt.plot([0, -u1], [0, u], linestyle='solid', color='blue')
+    plt.plot([u, u - u1], [u1, u1 + u], linestyle='solid', color='blue')
+    plt.text(0, 0, '       )>> AÇI(%s)' % round(b), color="red", size=6,)
+    plt.text((((u - u1) / 2) + u2) - 1, ((u + u1) / 2) + u3, ' SMax=(%s)' % round(smax1), color="blue", size=6,
+                 )
+    plt.text(((u - u1) / 2) - u3, ((u + u1) / 2) + u2, 'SMin(%s)' % round(smin1), color="blue", size=6,
+                 )
+    canvas = FigureCanvasTkAgg(fig1, master=master)
+    canvas.draw()
+    canvas.get_tk_widget().grid(row=0, column=1)
+"""iki eksenli gerekli olanlar"""
+tk.Label(master, text="İKİ EKSENLİ MOHR DAİRESİ").grid(row=0, column=0)
+
+tk.Label(master, text="Sx değerini giriniz:").grid(row=2, )
+
+tk.Label(master, text="Sy değerini giriniz:").grid(row=3, )
+
+tk.Label(master, text="Txy değerini giriniz:").grid(row=4, )
+
+tk.Label(master, text=".MPa").grid(row=2, column=2)
+
+tk.Label(master, text=".MPa").grid(row=3, column=2)
+
+tk.Label(master, text=".MPa").grid(row=4, column=2)
+a1 = tk.Entry(master)
+
+b1 = tk.Entry(master)
+
+c1 = tk.Entry(master)
+
+a1.grid(row=2, column=1)
+
+b1.grid(row=3, column=1)
+
+c1.grid(row=4, column=1)
+
+
+buton = tk.Button(master, text="İKİ EKSENLİ HESAPLA", command=lambda :[sigma(),tau(),mohr(),ilk(),sonuç()], bg="green").grid(row=5, column=1)
+"""üç eksenli"""
+tk.Label(master, text="ÜÇ EKSENLİ MOHR DAİRESİ").grid(row=0, column=5)
+
+tk.Label(master, text="Sxx").grid(row=4, column=4)
+
+tk.Label(master, text="Txy").grid(row=4, column=5)
+
+tk.Label(master, text="Txz").grid(row=4, column=6)
+
+tk.Label(master, text="Tyx").grid(row=6, column=4)
+
+tk.Label(master, text="Syy").grid(row=6, column=5)
+
+tk.Label(master, text="Tyz").grid(row=6, column=6)
+
+tk.Label(master, text="Tzx").grid(row=8, column=4)
+
+tk.Label(master, text="Tzy").grid(row=8, column=5)
+
+tk.Label(master, text="Szz").grid(row=8, column=6)
+
+a2 = tk.Entry(master)
+
+b2 = tk.Entry(master)
+
+c3 = tk.Entry(master)
+
+d2 = tk.Entry(master)
+
+e2 = tk.Entry(master)
+
+f2 = tk.Entry(master)
+
+a2.grid(row=3, column=4)
+
+b2.grid(row=3, column=5)
+
+c3.grid(row=3, column=6)
+
+d2.grid(row=5, column=5)
+
+e2.grid(row=5, column=6)
+
+f2.grid(row=7, column=6)
+
+entry = tk.Entry(master, state='disabled')
+entry.grid(row=5, column=4)
+
+entry1 = tk.Entry(master, state='disabled')
+entry1.grid(row=7, column=4)
+
+entry2 = tk.Entry(master, state='disabled')
+entry2.grid(row=7, column=5)
+
+buton = tk.Button(master, text="ÜÇ EKSENLİ HESAPLA", command=lambda: [mohr1(),sonuç1()], bg="green").grid(row=9, column=5)
+"""photo = PhotoImage(file=".img\\t1.png")
+boton1 = Button(image=photo, border=2,command=link).place(x=1250,y=10)
+photo1 = PhotoImage(file=".img\\a-removebg-preview.png")
+boton2 = Button(image=photo1, border=0,).grid(row=10,column=0)"""
+#photo2 = PhotoImage(file="mohr_8-removebg-preview.png")
+#boton3 = Button(image=photo2, border=0,).place(x=760,y=490)
+
+link2 = tk.Button(master, text="Dr. Öğr. Üyesi KENAN ÇINAR..", command=kenan, bg="blue").place(x=1080,y=660)
+link3 = tk.Button(master, text="Destek İçin\nTıklayınız..",command=lambda: [yardım1(),yardım()], bg="red").place(x=1280,y=660)
+
+
+
+
+
+
+canvas = FigureCanvasTkAgg(fig1, master=master)
+canvas.get_tk_widget().grid(row=0, column=1)
+canvas.draw()
+canvas = FigureCanvasTkAgg(fig, master=master)
+canvas.get_tk_widget().grid(row=0, column=0)
+canvas.draw()
+canvas = FigureCanvasTkAgg(fig2, master=master)
+canvas.get_tk_widget().grid(row=0, column=2)
+canvas.draw()
+canvas = FigureCanvasTkAgg(fig3, master=master)
+canvas.get_tk_widget().grid(row=0, column=5)
+canvas.draw()
+canvas = FigureCanvasTkAgg(fig4, master=master)
+canvas.get_tk_widget().place(x=350,y=480)
+canvas.draw()
+
+messagebox.showinfo("MOHR MAKER V0.2",'WELCOME\nCreated by Atakan Türkmen\nand\nUtkan Özer ' )
+
+
+master.mainloop()
